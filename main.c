@@ -5,8 +5,12 @@
 #include <string.h>
  
 GLfloat Cx = -2, Cy = -4, Cz = 1;
+// Posição inicial da bola
 GLfloat Bx = 0, By = 0, Bz = 0.25;
-char str[10] = " 0 x 0";
+char placar[10] = " 0 x 0";
+
+int frame = 0.2;
+double turningSpeed = 1.0;
  
 void MyInit()
 {
@@ -81,9 +85,17 @@ void Cube(GLfloat V0[], GLfloat V1[], GLfloat V2[], GLfloat V3[], GLfloat V4[], 
 }
  
 void bola(){
+    // glPushMatrix();
+    // glColor3f(1, 1, 1);
+    // glTranslatef(Bx,By,Bz+0.02);
+    // glutSolidSphere(0.02, 10, 10);
+    // glPopMatrix();
+
     glPushMatrix();
     glColor3f(1, 1, 1);
-    glTranslatef(Bx,By,Bz+0.02);
+    turningSpeed = 1.5;
+    glRotatef(turningSpeed * frame, 0, 1, 0);
+    glTranslatef(Bx, By, Bz+0.02);
     glutSolidSphere(0.02, 10, 10);
     glPopMatrix();
  
@@ -93,20 +105,20 @@ void displayScore(float x, float y, void *font){
     glColor3f(1,1,1);
     
     glRasterPos2f(x,y);
-    glutBitmapString(font, str);
+    glutBitmapString(font, placar);
 }
  
 void Draw()
 {
-    GLfloat V[8][3] =   {
+    GLfloat VCampo[8][3] =   {
                             {-1, 1, 0.25}, 
                             {1, 1, 0.25},
                             {1, -1, 0.25},
                             {-1, -1, 0.25},
-                            {-1, 1, -0.25}, 
-                            {1, 1, -0.25},
-                            {1, -1, -0.25},
-                            {-1, -1, -0.25},
+                            {-1, 1, 0}, 
+                            {1, 1, 0},
+                            {1, -1, 0},
+                            {-1, -1, 0},
                         };
  
     GLfloat t1i[8][3] =   {
@@ -180,7 +192,7 @@ void Draw()
     glLoadIdentity();
     gluLookAt(Cx+2, Cy+2, Cz, 0, 0, 0, 0, 1, 0);
     glPushMatrix();
-    Cube(V[0], V[1], V[2], V[3], V[4], V[5], V[6], V[7]);
+    Cube(VCampo[0], VCampo[1], VCampo[2], VCampo[3], VCampo[4], VCampo[5], VCampo[6], VCampo[7]);
     trave(t1i[0], t1i[1], t1i[2], t1i[3], t1i[4], t1i[5], t1i[6], t1i[7]);
     trave(t2i[0], t2i[1], t2i[2], t2i[3], t2i[4], t2i[5], t2i[6], t2i[7]);
     trave(t3i[0], t3i[1], t3i[2], t3i[3], t3i[4], t3i[5], t3i[6], t3i[7]);
@@ -200,25 +212,27 @@ void Key(unsigned char ch, int x, int y)
     switch (ch)
     {
         case 'w':
+            // Altera a velocidade da bola em y
             By += 0.03;
             By = (By > 1.04) ? 0 : By;
             break;
         case 's':
+            // Altera a velocidade da bola em y
             By -= 0.03;
             By = (By < -1.04) ? 0 : By;
             break;
         case 'a':
+            // Altera a velocidade da bola em x
             Bx -= 0.03;
-            // printf("%lf\n", By);
             if(Bx < -1.04){
                 if((By < 0.28 && By > -0.18)){
-                    int tam = strlen(str)-1;
-                    if(str[tam] - '0' + 1 > 9){
-                        str[tam+1] = (str[tam] - '0' + 1) % 10 + '0';
-                        str[tam] = (str[tam] - '0' + 1) / 10 + '0';
+                    int tam = strlen(placar)-1;
+                    if(placar[tam] - '0' + 1 > 9){
+                        placar[tam+1] = (placar[tam] - '0' + 1) % 10 + '0';
+                        placar[tam] = (placar[tam] - '0' + 1) / 10 + '0';
                     }
                     else{
-                        str[tam] += 1;
+                        placar[tam] += 1;
                     }
                     Bx = 0, By = 0, Bz = 0.25;
                 }
@@ -226,21 +240,20 @@ void Key(unsigned char ch, int x, int y)
                     Bx = 0;
                 }
             }
-            // Bx = (Bx < -1.04) ? ((By < 0.28 && By > -0.18) ? str[strlen(str)-1] = str[strlen(str)-1] + 1, 0 : 0) : Bx;
-            // printf("%s\n", str);
             break;
         case 'd':
+            // Altera a velocidade da bola em x
             Bx += 0.03;
             if(Bx > 1.04){
                 if((By < 0.28 && By > -0.18)){
                     int tam = 1;
-                    if(str[tam] - '0' + 1 > 9){
+                    if(placar[tam] - '0' + 1 > 9){
  
-                        str[tam-1] = (str[tam] - '0' + 1) / 10 + '0';
-                        str[tam] = (str[tam] - '0' + 1) % 10 + '0';
+                        placar[tam-1] = (placar[tam] - '0' + 1) / 10 + '0';
+                        placar[tam] = (placar[tam] - '0' + 1) % 10 + '0';
                     }
                     else{
-                        str[tam] += 1;
+                        placar[tam] += 1;
                     }
                     Bx = 0, By = 0, Bz = 0.25;
                 }
@@ -248,29 +261,32 @@ void Key(unsigned char ch, int x, int y)
                     Bx = 0;
                 }
             }
-            // printf("%lf\n", By);
-            // Bx = (Bx > 1.04) ? ((By < 0.28 && By > -0.18) ? str[0] = str[0] + 1, 0 : 0) : Bx;
-            // printf("%s\n", str);
             break;\
         case 'W':
+            // Altera a velocidade da bola em z
             Bz += 0.03;
             Bz = (Bz > 0.7) ? 0.25 : Bz;
             break;
         case 'S':
+            // Altera a velocidade da bola em z
             Bz -= 0.03;
             Bz = (Bz < 0.25) ? 0.25 : Bz;
             break;
         case 'x':
+            // Altera a posição da câmera em x
             Cx = Cx - 0.5;
             break;
         case 'X':
+            // Altera a posição da câmera em x
             Cx = Cx + 0.5;
             break;
  
         case 'y':
+            // Altera a posição da câmera em y
             Cy = Cy - 0.5;
             break;
         case 'Y':
+            // Altera a posição da câmera em y
             Cy = Cy + 0.5;
             break;
  
