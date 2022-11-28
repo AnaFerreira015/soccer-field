@@ -4,14 +4,238 @@
 #include <stdio.h>
 #include <string.h>
  
-GLfloat Cx = -2, Cy = -4, Cz = 1;
+GLfloat Cx = 0, Cy = -4, Cz = 2, Fx = 0, Fy = 4, Fz = -2, Ux = 0, Uy = 1, Uz = 0;
 // Posição inicial da bola
 GLfloat Bx = 0, By = 0, Bz = 0.25;
 char placar[10] = " 0 x 0";
 
 int frame = 0.2;
 double turningSpeed = 1.0;
- 
+
+void put_pixel(GLfloat xo, GLfloat yo){ 
+    glColor3f(1.0, 1.0, 1.0);
+    glPointSize(2.0);
+    glBegin(GL_POINTS);
+    glVertex3f(xo, yo, 0.25);
+    glEnd();
+}
+
+void put_pixel_center(GLfloat xo, GLfloat yo){ 
+    glColor3f(1.0, 1.0, 1.0);
+    glPointSize(5.0);
+    glBegin(GL_POINTS);
+    glVertex3f(xo, yo, 0.25);
+    glEnd();
+}
+
+void bresenhamCirxularEsq(GLfloat xc, GLfloat yc, GLfloat raio){
+    GLfloat x = 0, y = raio;
+    GLfloat d = raio;
+
+    while (y > x)
+    {
+        put_pixel(xc+x, yc-y);
+        put_pixel(xc+y, yc-x);
+        put_pixel(xc+y, yc+x);
+        put_pixel(xc+x, yc+y);
+
+        if(d < 0){
+            d+=2*x+0.0003;
+        }
+        else{
+            d+=2*(x-y) + 0.0005;
+            y-=0.0001;
+        }
+        x+=0.0001;
+    }
+}
+
+void bresenhamCirxularDir(GLfloat xc, GLfloat yc, GLfloat raio){
+    GLfloat x = 0, y = raio;
+    GLfloat d = raio;
+
+    while (y > x)
+    {
+        put_pixel(xc-x, yc+y);
+        put_pixel(xc-y, yc+x);
+        put_pixel(xc-y, yc-x);
+        put_pixel(xc-x, yc-y);
+
+        if(d < 0){
+            d+=2*x+0.0003;
+        }
+        else{
+            d+=2*(x-y) + 0.0005;
+            y-=0.0001;
+        }
+        x+=0.0001;
+    }
+}
+
+void bresenhamCirxular(GLfloat xc, GLfloat yc, GLfloat raio){
+    GLfloat x = 0, y = raio;
+    GLfloat d = raio;
+
+    while (y > x)
+    {
+        put_pixel(xc+x, yc-y);
+        put_pixel(xc+y, yc-x);
+        put_pixel(xc+y, yc+x);
+        put_pixel(xc+x, yc+y);
+        put_pixel(xc-x, yc+y);
+        put_pixel(xc-y, yc+x);
+        put_pixel(xc-y, yc-x);
+        put_pixel(xc-x, yc-y);
+
+        if(d < 0){
+            d+=2*x+0.0003;
+        }
+        else{
+            d+=2*(x-y) + 0.0005;
+            y-=0.0001;
+        }
+        x+=0.0001;
+    }
+}
+
+void bresenhamCirxularInfDirEscanteio(GLfloat xc, GLfloat yc, GLfloat raio){
+    GLfloat x = 0, y = raio;
+    GLfloat d = raio;
+
+    while (y > x)
+    {
+        put_pixel(xc-x, yc+y);
+        put_pixel(xc-y, yc+x);
+
+        if(d < 0){
+            d+=2*x+0.0003;
+        }
+        else{
+            d+=2*(x-y) + 0.0005;
+            y-=0.0001;
+        }
+        x+=0.0001;
+    }
+}
+
+
+void bresenhamCirxularSupDirEscanteio(GLfloat xc, GLfloat yc, GLfloat raio){
+    GLfloat x = 0, y = raio;
+    GLfloat d = raio;
+
+    while (y > x)
+    {
+
+        put_pixel(xc-y, yc-x);
+        put_pixel(xc-x, yc-y);
+
+        if(d < 0){
+            d+=2*x+0.0003;
+        }
+        else{
+            d+=2*(x-y) + 0.0005;
+            y-=0.0001;
+        }
+        x+=0.0001;
+    }
+}
+
+void bresenhamCirxularInfEsqEscanteio(GLfloat xc, GLfloat yc, GLfloat raio){
+    GLfloat x = 0, y = raio;
+    GLfloat d = raio;
+
+    while (y > x)
+    {
+        put_pixel(xc+y, yc+x);
+        put_pixel(xc+x, yc+y);
+
+        if(d < 0){
+            d+=2*x+0.0003;
+        }
+        else{
+            d+=2*(x-y) + 0.0005;
+            y-=0.0001;
+        }
+        x+=0.0001;
+    }
+}
+
+void bresenhamCirxularSupEsqEscanteio(GLfloat xc, GLfloat yc, GLfloat raio){
+    GLfloat x = 0, y = raio;
+    GLfloat d = raio;
+
+    while (y > x)
+    {
+        put_pixel(xc+x, yc-y);
+        put_pixel(xc+y, yc-x);
+
+        if(d < 0){
+            d+=2*x+0.0003;
+        }
+        else{
+            d+=2*(x-y) + 0.0005;
+            y-=0.0001;
+        }
+        x+=0.0001;
+    }
+}
+
+
+
+void bresenhamy(GLfloat xo, GLfloat yo, GLfloat xf, GLfloat yf){
+    GLfloat dy = yf - yo;
+    GLfloat dx = xf - xo;
+    
+    GLfloat E = 2 * dy;
+    GLfloat Ne = 2 * (dx - dy);
+    
+    GLfloat d = 2 * dx - dy;
+
+    GLfloat x = xo, y = yo;
+
+
+    while (y < yf){
+    // printf("foi %d\n", (int)x);
+        put_pixel(x, y);
+        if (d <= 0){
+            y += 0.001;
+            d += E;
+        }
+        else{
+            // x += 0.001;
+            y += 0.001;
+            d += Ne;
+        }
+    }
+}
+
+void bresenhamx(GLfloat xo, GLfloat yo, GLfloat xf, GLfloat yf){
+    GLfloat dy = yf - yo;
+    GLfloat dx = xf - xo;
+    
+    GLfloat E = 2 * dy;
+    GLfloat Ne = 2 * (dy - dx);
+    
+    GLfloat d = 2 * dy - dx;
+
+    GLfloat x = xo, y = yo;
+
+
+    while (x < xf || y < yf){
+    // printf("foi %d\n", (int)x);
+        put_pixel(x, y);
+        if (d <= 0){
+            x += 0.001;
+            d += E;
+        }
+        else{
+            x += 0.001;
+            y += 0.001;
+            d += Ne;
+        }
+    }
+}
+
 void MyInit()
 {
     glClearColor(0, 0, 0, 1);
@@ -83,21 +307,62 @@ void Cube(GLfloat V0[], GLfloat V1[], GLfloat V2[], GLfloat V3[], GLfloat V4[], 
     glColor3f(0, 1, 0); // green
     Square(V0, V1, V5, V4);
 }
- 
-void bola(){
-    // glPushMatrix();
-    // glColor3f(1, 1, 1);
-    // glTranslatef(Bx,By,Bz+0.02);
-    // glutSolidSphere(0.02, 10, 10);
+
+void bresenham(){
     // glPopMatrix();
 
     glPushMatrix();
-    glColor3f(1, 1, 1);
+    bresenhamx(-1, 1, 1, 1); // linha superior
+    bresenhamx(-1, -1, 1, -1); // linha inferior
+    bresenhamy(-1, -1, -1, 1); // linha esquerda
+    bresenhamy(1, -1, 1, 1);  // linha direita
+    bresenhamy(0, -1, 0, 1);  // linha central
+
+    //area direita
+    bresenhamy(0.6, -0.6, 0.6, 0.6);
+    bresenhamx(0.6, -0.6, 1, -0.6);
+    bresenhamx(0.6, 0.6, 1, 0.6);
+
+    //area pequena direita
+    bresenhamy(0.8, -0.3, 0.8, 0.3);
+    bresenhamx(0.8, -0.3, 1, -0.3);
+    bresenhamx(0.8, 0.3, 1, 0.3);
+
+    //area esquerda
+    bresenhamy(-0.6, -0.6, -0.6, 0.6);
+    bresenhamx(-1, -0.6, -0.6, -0.6);
+    bresenhamx(-1, 0.6, -0.6, 0.6);
+
+    //area pequena esquerda
+    bresenhamy(-0.8, -0.3, -0.8, 0.3);
+    bresenhamx(-1, -0.3, -0.8, -0.3);
+    bresenhamx(-1, 0.3, -0.8, 0.3);
+
+    bresenhamCirxular(0, 0, 0.25);
+    bresenhamCirxularEsq(-0.6, 0, 0.15);
+    bresenhamCirxularDir(0.6, 0, 0.15);
+
+    bresenhamCirxularSupEsqEscanteio(-1, 1, 0.07);
+    bresenhamCirxularInfEsqEscanteio(-1,-1,0.07);
+    bresenhamCirxularSupDirEscanteio(1, 1, 0.07);
+    bresenhamCirxularInfDirEscanteio(1,-1,0.07);
+
+    put_pixel_center(-0.7, 0);
+    put_pixel_center(0.7, 0);
+    put_pixel_center(0, 0);
+    // glPopMatrix();
+}
+
+void bola(){
+
+    glPushMatrix();
+    glColor3f(0, 0, 1);
     turningSpeed = 1.5;
     glRotatef(turningSpeed * frame, 0, 1, 0);
     glTranslatef(Bx, By, Bz+0.02);
     glutSolidSphere(0.02, 10, 10);
     glPopMatrix();
+    // bresenham();
  
 }
  
@@ -122,14 +387,14 @@ void Draw()
                         };
  
     GLfloat t1i[8][3] =   {
-                            {-1, 0.3, 0.55},
-                            {-0.98, 0.3, 0.55},
-                            {-0.98, 0.28, 0.55},
-                            {-1, 0.28, 0.55},
-                            {-1, 0.3, 0},
-                            {-0.98, 0.3, 0},
-                            {-0.98, 0.28, 0},
-                            {-1, 0.28, 0},
+                            {-1, 0.2, 0.55},
+                            {-0.98, 0.2, 0.55},
+                            {-0.98, 0.18, 0.55},
+                            {-1, 0.18, 0.55},
+                            {-1, 0.2, 0.20},
+                            {-0.98, 0.2, 0.20},
+                            {-0.98, 0.18, 0.20},
+                            {-1, 0.18, 0.20},
                         };
  
     GLfloat t2i[8][3] =   {
@@ -137,32 +402,32 @@ void Draw()
                             {-0.98, -0.2, 0.55},
                             {-0.98, -0.18, 0.55},
                             {-1, -0.18, 0.55},
-                            {-1, -0.2, 0},
-                            {-0.98, -0.2, 0},
-                            {-0.98, -0.18, 0},
-                            {-1, -0.18, 0},
+                            {-1, -0.2, 0.20},
+                            {-0.98, -0.2, 0.20},
+                            {-0.98, -0.18, 0.20},
+                            {-1, -0.18, 0.20},
                         };
  
     GLfloat t3i[8][3] =   {
                             {-1, -0.2, 0.55},
                             {-0.98, -0.2, 0.55},
-                            {-0.98, 0.3, 0.55},
-                            {-1, 0.3, 0.55},
+                            {-0.98, 0.2, 0.55},
+                            {-1, 0.2, 0.55},
                             {-1, -0.2, 0.54},
                             {-0.98, -0.2, 0.54},
-                            {-0.98, 0.3, 0.54},
-                            {-1, 0.3, 0.54},
+                            {-0.98, 0.2, 0.54},
+                            {-1, 0.2, 0.54},
                         };
  
     GLfloat t4i[8][3] =   {
-                            {1, 0.3, 0.55},
-                            {0.98, 0.3, 0.55},
-                            {0.98, 0.28, 0.55},
-                            {1, 0.28, 0.55},
-                            {1, 0.3, 0},
-                            {0.98, 0.3, 0},
-                            {0.98, 0.28, 0},
-                            {1, 0.28, 0},
+                            {1, 0.2, 0.55},
+                            {0.98, 0.2, 0.55},
+                            {0.98, 0.18, 0.55},
+                            {1, 0.18, 0.55},
+                            {1, 0.2, 0.20},
+                            {0.98, 0.2, 0.20},
+                            {0.98, 0.18, 0.20},
+                            {1, 0.18, 0.20},
                         };
  
     GLfloat t5i[8][3] =   {
@@ -170,27 +435,27 @@ void Draw()
                             {0.98, -0.2, 0.55},
                             {0.98, -0.18, 0.55},
                             {1, -0.18, 0.55},
-                            {1, -0.2, 0},
-                            {0.98, -0.2, 0},
-                            {0.98, -0.18, 0},
-                            {1, -0.18, 0},
+                            {1, -0.2, 0.20},
+                            {0.98, -0.2, 0.20},
+                            {0.98, -0.18, 0.20},
+                            {1, -0.18, 0.20},
                         };
  
     GLfloat t6i[8][3] =   {
                             {1, -0.2, 0.55},
                             {0.98, -0.2, 0.55},
-                            {0.98, 0.3, 0.55},
-                            {1, 0.3, 0.55},
+                            {0.98, 0.2, 0.55},
+                            {1, 0.2, 0.55},
                             {1, -0.2, 0.54},
                             {0.98, -0.2, 0.54},
-                            {0.98, 0.3, 0.54},
-                            {1, 0.3, 0.54},
+                            {0.98, 0.2, 0.54},
+                            {1, 0.2, 0.54},
                         };
  
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  
     glLoadIdentity();
-    gluLookAt(Cx+2, Cy+2, Cz, 0, 0, 0, 0, 1, 0);
+    gluLookAt(Cx, Cy, Cz, Fx+Cx, Fy+Cy, Fz+Cz, Ux, Uy, Uz);
     glPushMatrix();
     Cube(VCampo[0], VCampo[1], VCampo[2], VCampo[3], VCampo[4], VCampo[5], VCampo[6], VCampo[7]);
     trave(t1i[0], t1i[1], t1i[2], t1i[3], t1i[4], t1i[5], t1i[6], t1i[7]);
@@ -199,6 +464,7 @@ void Draw()
     trave(t4i[0], t4i[1], t4i[2], t4i[3], t4i[4], t4i[5], t4i[6], t4i[7]);
     trave(t5i[0], t5i[1], t5i[2], t5i[3], t5i[4], t5i[5], t5i[6], t5i[7]);
     trave(t6i[0], t6i[1], t6i[2], t6i[3], t6i[4], t6i[5], t6i[6], t6i[7]);
+    bresenham();
     glPopMatrix();
     bola();
  
@@ -272,29 +538,41 @@ void Key(unsigned char ch, int x, int y)
             Bz -= 0.03;
             Bz = (Bz < 0.25) ? 0.25 : Bz;
             break;
-        case 'x':
+        case 'j':
             // Altera a posição da câmera em x
-            Cx = Cx - 0.5;
+            Cx = Cx - 0.3;
             break;
-        case 'X':
+        case 'l':
             // Altera a posição da câmera em x
-            Cx = Cx + 0.5;
+            Cx = Cx + 0.3;
             break;
  
-        case 'y':
+        case 'k':
             // Altera a posição da câmera em y
-            Cy = Cy - 0.5;
+            Cy = Cy - 0.3;
             break;
-        case 'Y':
+        case 'i':
             // Altera a posição da câmera em y
-            Cy = Cy + 0.5;
+            Cy = Cy + 0.3;
             break;
  
         case 'z':
-            Cz = Cz - 0.5;
+            Cz = Cz - 0.1;
             break;
         case 'Z':
-            Cz = Cz + 0.5;
+            Cz = Cz + 0.1;
+            break;
+        case 'I':
+            Fz += 0.3;
+            break;
+        case 'K':
+            Fz -= 0.3;
+            break;
+        case 'J':
+            Fx -= 0.3;
+            break;
+        case 'L':
+            Fx += 0.3;
             break;
     }
  
