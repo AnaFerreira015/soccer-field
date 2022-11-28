@@ -372,20 +372,92 @@ void displayScore(float x, float y, void *font){
     glRasterPos2f(x,y);
     glutBitmapString(font, placar);
 }
+
+void arquibancada(GLfloat p0[], GLfloat p1[], GLfloat p2[], GLfloat p3[], GLfloat p4[], GLfloat p5[], GLfloat p6[], GLfloat p7[]){
+    glColor3f(1,0,0);
+    Square(p0, p1, p2, p3);
  
+    glColor3f(1,0,0);
+    Square(p4, p5, p6, p7);
+ 
+    glColor3f(1,0,0);
+    Square(p0, p4, p7, p3);
+ 
+    glColor3f(1,0,0);
+    Square(p1, p5, p6, p2);
+ 
+    glColor3f(1,0,0);
+    Square(p3, p2, p6, p7);
+ 
+    glColor3f(1,0,0);
+    Square(p0, p1, p5, p4);
+}
+
+void  arquibancadas(){
+    GLfloat arquibancadaGolEsq[8][3] =   {
+                            {-2, 2, 0.35}, 
+                            {-1.5, 2, 0.35},
+                            {-1.5, -2, 0.35},
+                            {-2, -2, 0.35},
+                            {-2, 2, 0.25}, 
+                            {-1.5, 2, 0.25},
+                            {-1.5, -2, 0.25},
+                            {-2, -2, 0.25},
+                        };
+
+    GLfloat arquibancadaGolDir[8][3] =   {
+                            {1.5, 2, 0.35}, 
+                            {2, 2, 0.35},
+                            {2, -2, 0.35},
+                            {1.5, -2, 0.35},
+                            {1.5, 2, 0.25}, 
+                            {2, 2, 0.25},
+                            {2, -2, 0.25},
+                            {1.5, -2, 0.25},
+                        };
+
+    GLfloat arquibancadaFront[8][3] =   {
+                            {-2, -1.5, 0.35}, 
+                            {2, -1.5, 0.35},
+                            {2, -2, 0.35},
+                            {-2, -2, 0.35},
+                            {-2, -1.5, 0.25}, 
+                            {2, -1.5, 0.25},
+                            {2, -2, 0.25},
+                            {-2, -2, 0.25},
+                        };
+
+    GLfloat arquibancadaBack[8][3] =   {
+                            {-2, 2, 0.35}, 
+                            {2, 2, 0.35},
+                            {2, 1.5, 0.35},
+                            {-2, 1.5, 0.35},
+                            {-2, 2, 0.25}, 
+                            {2, 2, 0.25},
+                            {2, 1.5, 0.25},
+                            {-2, 1.5, 0.25},
+                        };
+    
+    arquibancada(arquibancadaGolEsq[0], arquibancadaGolEsq[1], arquibancadaGolEsq[2], arquibancadaGolEsq[3], arquibancadaGolEsq[4], arquibancadaGolEsq[5], arquibancadaGolEsq[6], arquibancadaGolEsq[7]);
+     arquibancada(arquibancadaGolDir[0], arquibancadaGolDir[1], arquibancadaGolDir[2], arquibancadaGolDir[3], arquibancadaGolDir[4], arquibancadaGolDir[5], arquibancadaGolDir[6], arquibancadaGolDir[7]);
+     arquibancada(arquibancadaFront[0], arquibancadaFront[1], arquibancadaFront[2], arquibancadaFront[3], arquibancadaFront[4], arquibancadaFront[5], arquibancadaFront[6], arquibancadaFront[7]);
+     arquibancada(arquibancadaBack[0], arquibancadaBack[1], arquibancadaBack[2], arquibancadaBack[3], arquibancadaBack[4], arquibancadaBack[5], arquibancadaBack[6], arquibancadaBack[7]);
+}
+
 void Draw()
 {
     GLfloat VCampo[8][3] =   {
-                            {-1, 1, 0.25}, 
-                            {1, 1, 0.25},
-                            {1, -1, 0.25},
-                            {-1, -1, 0.25},
-                            {-1, 1, 0}, 
-                            {1, 1, 0},
-                            {1, -1, 0},
-                            {-1, -1, 0},
+                            {-2, 2, 0.25}, 
+                            {2, 2, 0.25},
+                            {2, -2, 0.25},
+                            {-2, -2, 0.25},
+                            {-2, 2, 0}, 
+                            {2, 2, 0},
+                            {2, -2, 0},
+                            {-2, -2, 0},
                         };
- 
+    
+
     GLfloat t1i[8][3] =   {
                             {-1, 0.2, 0.55},
                             {-0.98, 0.2, 0.55},
@@ -464,6 +536,7 @@ void Draw()
     trave(t4i[0], t4i[1], t4i[2], t4i[3], t4i[4], t4i[5], t4i[6], t4i[7]);
     trave(t5i[0], t5i[1], t5i[2], t5i[3], t5i[4], t5i[5], t5i[6], t5i[7]);
     trave(t6i[0], t6i[1], t6i[2], t6i[3], t6i[4], t6i[5], t6i[6], t6i[7]);
+    arquibancadas();
     bresenham();
     glPopMatrix();
     bola();
