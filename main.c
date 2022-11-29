@@ -1,20 +1,68 @@
 // #include<windows.h>
 #include<GL/glut.h>
-#include<GL/glut.h>
+#include <GL/gl.h>
 #include <stdio.h>
 #include <string.h>
- 
-GLfloat Cx = 0, Cy = -4, Cz = 2, Fx = 0, Fy = 4, Fz = -2, Ux = 0, Uy = 1, Uz = 0;
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+#define MODEL_QUANT 50
+
+void setup_lighting();
+
+GLfloat angle = 50, fAspect = (GLfloat)800/(GLfloat)600, rotX= 0, rotY=-2, obsZ=2;
+GLfloat Cx = 0, Cy = -3.1, Cz = 2.9, Fx = 0, Fy = 4, Fz = -4.1, Ux = 0, Uy = 1, Uz = 0;
 // Posição inicial da bola
 GLfloat Bx = 0, By = 0, Bz = 0.25;
 char placar[10] = " 0 x 0";
-
+int ligado = 1, dia = 0;
 int frame = 0.2;
 double turningSpeed = 1.0;
 
+void load_texture(const char *path, int index)
+{
+	unsigned int textureID;
+
+    int width, height, nrComponents;
+    unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
+    if (data)
+    {
+        GLenum format;
+        if (nrComponents == 1)
+            format = GL_RED;
+        else if (nrComponents == 3)
+            format = GL_RGB;
+        else if (nrComponents == 4)
+            format = GL_RGBA;
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    	glGenTextures(1, &textureID);
+
+		glBindTexture(GL_TEXTURE_2D, textureID);
+        
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  		
+  		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+  		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+        stbi_image_free(data);
+	} else {
+		printf("Existe essa textura n�o me ajuda ai marcelo na moral");
+	}
+}
+
+void apply_texture(int index)
+{
+   glBindTexture(GL_TEXTURE_2D, index);
+}
+
 void put_pixel(GLfloat xo, GLfloat yo){ 
-    glColor3f(1.0, 1.0, 1.0);
-    glPointSize(2.0);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glPointSize(3.0);
     glBegin(GL_POINTS);
     glVertex3f(xo, yo, 0.25);
     glEnd();
@@ -281,31 +329,91 @@ void trave(GLfloat t0[], GLfloat t1[], GLfloat t2[], GLfloat t3[], GLfloat t4[],
     Square(t0, t1, t5, t4);
  
 }
- 
+
+void PosicionaObservador(void)
+{
+	// Especifica sistema de coordenadas do modelo
+	glMatrixMode(GL_MODELVIEW);
+	// Inicializa sistema de coordenadas do modelo
+	glLoadIdentity();
+	// DefineIluminacao();
+	// Especifica posição do observador e do alvo
+	glTranslatef(0,0,-obsZ);
+	glRotatef(rotX,1,0,0);
+	glRotatef(rotY,0,1,0);
+}
+
+void EspecificaParametrosVisualizacao(void)
+{
+	// Especifica sistema de coordenadas de projeção
+	glMatrixMode(GL_PROJECTION);
+	// Inicializa sistema de coordenadas de projeção
+	glLoadIdentity();
+
+	// Especifica a projeção perspectiva(angulo,aspecto,zMin,zMax)
+	gluPerspective(angle,fAspect,0.5,500);
+
+	PosicionaObservador();
+}
+
+void GerenciaMouse(int button, int state, int x, int y)
+{
+	if (button == GLUT_LEFT_BUTTON)
+		if (state == GLUT_DOWN) {  // Zoom-in
+			if (angle >= 10) angle -= 5;
+		}
+	if (button == GLUT_RIGHT_BUTTON)
+		if (state == GLUT_DOWN) {  // Zoom-out
+			if (angle <= 130) angle += 5;
+		}
+	EspecificaParametrosVisualizacao();
+	glutPostRedisplay();
+}
+
 void Cube(GLfloat V0[], GLfloat V1[], GLfloat V2[], GLfloat V3[], GLfloat V4[], GLfloat V5[], GLfloat V6[], GLfloat V7[])
 {
-    // glColor3f(1, 0, 0); // 
+
+    float matSpecular[] = {1.f,1.f,1.f,1.f,};
+    glMaterialfv(GL_FRONT, GL_SPECULAR, matSpecular);
+    glMaterialf(GL_FRONT, GL_SHININESS, 128);
+    if(dia) glNormal3f(0, 0, 0.4);
+    if(ligado) glNormal3f(-1.25, -0.9, 0);
     glColor3f(0, 1, 0); // green
     Square(V0, V1, V2, V3);
- 
+
+    if(ligado) glNormal3f(1.25, 0.9, 0);
     glColor3f(0, 1, 0); // green
     Square(V4, V5, V6, V7);
  
-    // glColor3f(0, 0, 1); // blue
+    if(ligado) glNormal3f(-1.25, 0.9, 0);
     glColor3f(0, 1, 0); // green
     Square(V0, V4, V7, V3);
- 
-    // glColor3f(1, 1, 0);
+
+    if(ligado) glNormal3f(1.25, -0.9, 0);
     glColor3f(0, 1, 0); // green
     Square(V1, V5, V6, V2);
  
-    // glColor3f(1, 0, 1); 
     glColor3f(0, 1, 0); // green
     Square(V3, V2, V6, V7);
  
-    // glColor3f(0, 1, 1);
     glColor3f(0, 1, 0); // green
     Square(V0, V1, V5, V4);
+
+    load_texture("gramado.jpg", 0);
+    glEnable(GL_TEXTURE_2D);
+  		glBegin(GL_QUADS);
+  		
+		  glTexCoord2f(2.0, 0.0); 
+		  glVertex3f(-1, 1, 0.25001);
+		  glTexCoord2f(2.0, 1.0); 
+		  glVertex3f(-1, -1, 0.25001);
+		  glTexCoord2f(0.0, 1.0); 
+		  glVertex3f(1, -1, 0.25001);
+		  glTexCoord2f(0.0, 0.0); 
+		  glVertex3f(1, 1, 0.25001);
+
+  		glEnd();
+  	glDisable(GL_TEXTURE_2D);
 }
 
 void bresenham(){
@@ -372,20 +480,418 @@ void displayScore(float x, float y, void *font){
     glRasterPos2f(x,y);
     glutBitmapString(font, placar);
 }
+
+void arquibancada(int r, int g, int b, GLfloat p0[], GLfloat p1[], GLfloat p2[], GLfloat p3[], GLfloat p4[], GLfloat p5[], GLfloat p6[], GLfloat p7[]){
+  
+    
+    glColor3f(r,g,b);
+    Square(p0, p1, p2, p3);
  
+    glColor3f(r,g,b);
+    Square(p4, p5, p6, p7);
+ 
+    glColor3f(r,g,b);
+    Square(p0, p4, p7, p3);
+ 
+     glColor3f(r,g,b);
+    Square(p1, p5, p6, p2);
+ 
+     glColor3f(r,g,b);
+    Square(p3, p2, p6, p7);
+ 
+     glColor3f(r,g,b);
+    Square(p0, p1, p5, p4);
+
+
+}
+
+void textureArq(float x_min, float x_max, float y_min, float y_max, float z){
+    load_texture("telha-cor.jpg", 1);
+    glEnable(GL_TEXTURE_2D);
+  		glBegin(GL_QUADS);
+  		
+		  glTexCoord2f(1, 0.0); 
+		  glVertex3f(x_min, y_max, z);
+		  glTexCoord2f(1, 0.5); 
+		  glVertex3f(x_min, y_min, z);
+		  glTexCoord2f(0.0, 0.5); 
+		  glVertex3f(x_max, y_min, z);
+		  glTexCoord2f(0.0, 0.0); 
+		  glVertex3f(x_max, y_max, z);
+
+  		glEnd();
+
+  	glDisable(GL_TEXTURE_2D);
+}
+
+void textureArq2(float x, float y_min, float y_max, float z_min, float z_max){
+    load_texture("creme-cor.jpg", 1);
+    glEnable(GL_TEXTURE_2D);
+  		glBegin(GL_QUADS);
+  		
+		  glTexCoord2f(1, 0.0); 
+		  glVertex3f(x, y_min, z_max);
+		  glTexCoord2f(1, 0.5); 
+		  glVertex3f(x, y_min, z_min);
+		  glTexCoord2f(0.0, 0.5); 
+		  glVertex3f(x, y_max, z_min);
+		  glTexCoord2f(0.0, 0.0); 
+		  glVertex3f(x, y_max, z_max);
+
+  		glEnd();
+
+  	glDisable(GL_TEXTURE_2D);
+}
+
+void textureArq3(float x_min, float x_max, float y, float z_min, float z_max){
+    load_texture("creme-cor.jpg", 1);
+    glEnable(GL_TEXTURE_2D);
+  		glBegin(GL_QUADS);
+  		
+		  glTexCoord2f(1, 0.0); 
+		  glVertex3f(x_min, y, z_max);
+		  glTexCoord2f(1, 0.5); 
+		  glVertex3f(x_min, y, z_min);
+		  glTexCoord2f(0.0, 0.5); 
+		  glVertex3f(x_max, y, z_min);
+		  glTexCoord2f(0.0, 0.0); 
+		  glVertex3f(x_max, y, z_max);
+
+  		glEnd();
+
+  	glDisable(GL_TEXTURE_2D);
+}
+
+void  arquibancadas(){
+    GLfloat arquibancadaGolEsq[8][3] =   {
+                        {-2.1, 2, 0.55}, 
+                        {-1.75, 2, 0.55},
+                        {-1.75, -2, 0.55},
+                        {-2.1, -2, 0.55},
+                        {-2.1, 2, 0}, 
+                        {-1.75, 2, 0},
+                        {-1.75, -2, 0},
+                        {-2.1, -2, 0},
+                    };
+    GLfloat arquibancadaGolEsq_B[8][3] =   {
+                        {-2.1, 2, 0.56}, 
+                        {-1.75, 2, 0.56},
+                        {-1.75, -2, 0.56},
+                        {-2.1, -2, 0.56},
+                        {-2.1, 2, 0.56}, 
+                        {-1.75, 2, 0.56},
+                        {-1.75, -2, 0.56},
+                        {-2.1, -2, 0.56},
+                    };
+
+    GLfloat arquibancadaGolEsq_2[8][3] =   {
+        {-1.75, 1.75, 0.35}, 
+        {-1.5, 1.75, 0.35},
+        {-1.5, -1.75, 0.35},
+        {-1.75, -1.75, 0.35},
+        {-1.75, 1.75, 0.25}, 
+        {-1.5, 1.75, 0.25},
+        {-1.5, -1.75, 0.25},
+        {-1.75, -1.75, 0.25},
+    };
+    GLfloat arquibancadaGolEsq_3[8][3] =   {
+        {-1.49, 1.75, 0.35}, 
+        {-1.49, 1.75, 0.35},
+        {-1.49, -1.75, 0.35},
+        {-1.49, -1.75, 0.35},
+        {-1.49, 1.75, 0.25}, 
+        {-1.49, 1.75, 0.25},
+        {-1.49, -1.75, 0.25},
+        {-1.49, -1.75, 0.25},
+    };
+
+    GLfloat arquibancadaGolDir[8][3] =   {
+                            {1.75, 2, 0.55}, 
+                            {2.1, 2, 0.55},
+                            {2.1, -2, 0.55},
+                            {1.75, -2, 0.55},
+                            {1.75, 2, 0}, 
+                            {2.1, 2, 0},
+                            {2.1, -2, 0},
+                            {1.75, -2, 0},
+                        };
+    GLfloat arquibancadaGolDir_B[8][3] =   {
+                            {1.75, 2, 0.56}, 
+                            {2.1, 2, 0.56},
+                            {2.1, -2, 0.56},
+                            {1.75, -2, 0.56},
+                            {1.75, 2, 0.56}, 
+                            {2.1, 2, 0.56},
+                            {2.1, -2, 0.56},
+                            {1.75, -2, 0.56},
+                        };
+     GLfloat arquibancadaGolDir_2[8][3] =   {
+                            {1.5, 1.75, 0.35}, 
+                            {1.75, 1.75, 0.35},
+                            {1.75, -1.75, 0.35},
+                            {1.5, -1.75, 0.35},
+                            {1.5, 1.75, 0.25}, 
+                            {1.75, 1.75, 0.25},
+                            {1.75, -1.75, 0.25},
+                            {1.5, -1.75, 0.25},
+                        };
+
+    GLfloat arquibancadaGolDir_3[8][3] =   {
+                            {1.49, 1.75, 0.35}, 
+                            {1.49, 1.75, 0.35},
+                            {1.49, -1.75, 0.35},
+                            {1.49, -1.75, 0.35},
+                            {1.49, 1.75, 0.25}, 
+                            {1.49, 1.75, 0.25},
+                            {1.49, -1.75, 0.25},
+                            {1.49, -1.75, 0.25},
+                        };
+
+    GLfloat arquibancadaFront[8][3] =   {
+                            {-2.1, -1.75, 0.55}, 
+                            {2.1, -1.75, 0.55},
+                            {2.1, -2.1, 0.55},
+                            {-2.1, -2.1, 0.55},
+                            {-2.1, -2, 0}, 
+                            {2.1, -2, 0},
+                            {2.1, -2.1, 0},
+                            {-2.1, -2.1, 0},
+                        };
+    GLfloat arquibancadaFront_B[8][3] =   {
+                            {-2.1, -1.75, 0.56}, 
+                            {2.1, -1.75, 0.56},
+                            {2.1, -2.1, 0.56},
+                            {-2.1, -2.1, 0.56},
+                            {-2.1, -1.75, 0.56}, 
+                            {2.1, -1.75, 0.56},
+                            {2.1, -2.1, 0.56},
+                            {-2.1, -2.1, 0.56},
+                        };
+    GLfloat arquibancadaFront_2[8][3] =   {
+                            {-1.75, -1.5, 0.35}, 
+                            {1.75, -1.5, 0.35},
+                            {1.75, -2, 0.35},
+                            {-1.75, -2, 0.35},
+                            {-1.75, -1.5, 0.25}, 
+                            {1.75, -1.5, 0.25},
+                            {1.75, -2, 0.25},
+                            {-1.75, -2, 0.25},
+                        };
+    GLfloat arquibancadaFront_3[8][3] =   {
+                            {-1.75, -1.49, 0.35}, 
+                            {1.75, -1.49, 0.35},
+                            {1.75, -1.49, 0.35},
+                            {-1.75, -1.49, 0.35},
+                            {-1.75, -1.49, 0.25}, 
+                            {1.75, -1.49, 0.25},
+                            {1.75, -1.49, 0.25},
+                            {-1.75, -1.49, 0.25},
+                        };
+
+    GLfloat arquibancadaBack[8][3] =   {
+                            {-2, 2, 0.55}, 
+                            {2, 2, 0.55},
+                            {2, 1.75, 0.55},
+                            {-2, 1.75, 0.55},
+                            {-2, 2, 0.25}, 
+                            {2, 2, 0.25},
+                            {2, 1.75, 0.25},
+                            {-2, 1.75, 0.25},
+                        };
+    GLfloat arquibancadaBack_B[8][3] =   {
+                            {-2, 2, 0.56}, 
+                            {2.1, 2, 0.56},
+                            {2.1, 1.75, 0.56},
+                            {-2, 1.75, 0.56},
+                            {-2, 2, 0.56}, 
+                            {2.1, 2, 0.56},
+                            {2.1, 1.75, 0.56},
+                            {-2, 1.75, 0.56},
+                        };
+    GLfloat arquibancadaBack_2[8][3] =   {
+                            {-1.75, 1.75, 0.35}, 
+                            {1.75, 1.75, 0.35},
+                            {1.75, 1.5, 0.35},
+                            {-1.75, 1.5, 0.35},
+                            {-1.75, 1.75, 0.25}, 
+                            {1.75, 1.75, 0.25},
+                            {1.75, 1.5, 0.25},
+                            {-1.75, 1.5, 0.25},
+                        };
+     GLfloat arquibancadaBack_3[8][3] =   {
+                            {-1.75, 1.49, 0.35}, 
+                            {1.75, 1.49, 0.35},
+                            {1.75, 1.49, 0.35},
+                            {-1.75, 1.49, 0.35},
+                            {-1.75, 1.49, 0.25}, 
+                            {1.75, 1.49, 0.25},
+                            {1.75, 1.49, 0.25},
+                            {-1.75, 1.49, 0.25},
+                        };
+    
+    arquibancada(1,1,1, arquibancadaGolEsq[0], arquibancadaGolEsq[1], arquibancadaGolEsq[2], arquibancadaGolEsq[3], arquibancadaGolEsq[4], arquibancadaGolEsq[5], arquibancadaGolEsq[6], arquibancadaGolEsq[7]);
+    arquibancada(1,1,1, arquibancadaGolEsq_3[0], arquibancadaGolEsq_3[1], arquibancadaGolEsq_3[2], arquibancadaGolEsq_3[3], arquibancadaGolEsq_3[4], arquibancadaGolEsq_3[5], arquibancadaGolEsq_3[6], arquibancadaGolEsq_3[7]);
+    //telhado
+    arquibancada(0,1,1, arquibancadaGolEsq_B[0], arquibancadaGolEsq_B[1], arquibancadaGolEsq_B[2], arquibancadaGolEsq_B[3], arquibancadaGolEsq_B[4], arquibancadaGolEsq_B[5], arquibancadaGolEsq_B[6], arquibancadaGolEsq_B[7]);
+    arquibancada(0,1,1, arquibancadaGolEsq_2[0], arquibancadaGolEsq_2[1], arquibancadaGolEsq_2[2], arquibancadaGolEsq_2[3], arquibancadaGolEsq_2[4], arquibancadaGolEsq_2[5], arquibancadaGolEsq_2[6], arquibancadaGolEsq_2[7]);
+
+
+
+    arquibancada(1,1,1, arquibancadaGolDir[0], arquibancadaGolDir[1], arquibancadaGolDir[2], arquibancadaGolDir[3], arquibancadaGolDir[4], arquibancadaGolDir[5], arquibancadaGolDir[6], arquibancadaGolDir[7]);
+    arquibancada(1,1,1, arquibancadaGolDir_3[0], arquibancadaGolDir_3[1], arquibancadaGolDir_3[2], arquibancadaGolDir_3[3], arquibancadaGolDir_3[4], arquibancadaGolDir_3[5], arquibancadaGolDir_3[6], arquibancadaGolDir_3[7]);
+    //telhado
+    arquibancada(0,1,1, arquibancadaGolDir_B[0], arquibancadaGolDir_B[1], arquibancadaGolDir_B[2], arquibancadaGolDir_B[3], arquibancadaGolDir_B[4], arquibancadaGolDir_B[5], arquibancadaGolDir_B[6], arquibancadaGolDir_B[7]);
+    arquibancada(0,1,1, arquibancadaGolDir_2[0], arquibancadaGolDir_2[1], arquibancadaGolDir_2[2], arquibancadaGolDir_2[3], arquibancadaGolDir_2[4], arquibancadaGolDir_2[5], arquibancadaGolDir_2[6], arquibancadaGolDir_2[7]);
+
+    arquibancada(1,1,1, arquibancadaFront[0], arquibancadaFront[1], arquibancadaFront[2], arquibancadaFront[3], arquibancadaFront[4], arquibancadaFront[5], arquibancadaFront[6], arquibancadaFront[7]);
+    arquibancada(1,1,1, arquibancadaFront_3[0], arquibancadaFront_3[1], arquibancadaFront_3[2], arquibancadaFront_3[3], arquibancadaFront_3[4], arquibancadaFront_3[5], arquibancadaFront_3[6], arquibancadaFront_3[7]);
+    //telhado
+    arquibancada(0,1,1, arquibancadaFront_B[0], arquibancadaFront_B[1], arquibancadaFront_B[2], arquibancadaFront_B[3], arquibancadaFront_B[4], arquibancadaFront_B[5], arquibancadaFront_B[6], arquibancadaFront_B[7]);
+    arquibancada(0,1,1, arquibancadaFront_2[0], arquibancadaFront_2[1], arquibancadaFront_2[2], arquibancadaFront_2[3], arquibancadaFront_2[4], arquibancadaFront_2[5], arquibancadaFront_2[6], arquibancadaFront_2[7]);
+
+    arquibancada(1,1,1, arquibancadaBack[0], arquibancadaBack[1], arquibancadaBack[2], arquibancadaBack[3], arquibancadaBack[4], arquibancadaBack[5], arquibancadaBack[6], arquibancadaBack[7]);
+    arquibancada(1,1,1, arquibancadaBack_3[0], arquibancadaBack_3[1], arquibancadaBack_3[2], arquibancadaBack_3[3], arquibancadaBack_3[4], arquibancadaBack_3[5], arquibancadaBack_3[6], arquibancadaBack_3[7]);
+    //telhado
+    arquibancada(0,1,1, arquibancadaBack_B[0], arquibancadaBack_B[1], arquibancadaBack_B[2], arquibancadaBack_B[3], arquibancadaBack_B[4], arquibancadaBack_B[5], arquibancadaBack_B[6], arquibancadaBack_B[7]);
+    arquibancada(0,1,1, arquibancadaBack_2[0], arquibancadaBack_2[1], arquibancadaBack_2[2], arquibancadaBack_2[3], arquibancadaBack_2[4], arquibancadaBack_2[5], arquibancadaBack_2[6], arquibancadaBack_2[7]);
+
+    textureArq(-2.1, -1.75, -2, 2, 0.56001);
+    textureArq(-1.75, -1.5, -1.75, 1.75, 0.35001);
+    textureArq(1.75, 2.1, -2, 2, 0.56001);
+    textureArq(1.5, 1.75, -1.75, 1.75, 0.35001);
+    textureArq(-2.1, 2.1, -2.1, -1.75, 0.56001);
+    textureArq(-1.75, 1.75, -2, -1.5, 0.35001);
+    textureArq(-2, 2.1, 1.75, 2, 0.56001);
+    textureArq(-1.75, 1.75, 1.5, 1.75, 0.35001);
+
+    textureArq2(-1.74999, -2, 2, 0.25, 0.55);
+    textureArq2(-1.48999, -1.75, 1.75, 0.25, 0.35);
+    textureArq2(1.74999, -2, 2, 0.25, 0.55);
+    textureArq2(1.48999, -1.75, 1.75, 0.25, 0.35);
+
+    textureArq3(-2.1, 2.1, 1.74999, 0.25, 0.55);
+    textureArq3(-1.75, 1.75, -1.48999, 0.25, 0.35);
+    textureArq3(-2, 2, 1.48999, 0.25, 0.35);
+    textureArq3(-1.75, 1.75, -1.74999, 0.25, 0.55);
+
+
+
+
+}
+
+void refletor(GLfloat p0[], GLfloat p1[], GLfloat p2[], GLfloat p3[], GLfloat p4[], GLfloat p5[], GLfloat p6[], GLfloat p7[]){
+    glColor3f(0.5,0.5,0.5);
+    Square(p0, p1, p2, p3);
+ 
+    glColor3f(0.5,0.5,0.5);
+    Square(p4, p5, p6, p7);
+ 
+    glColor3f(0.5,0.5,0.5);
+    Square(p0, p4, p7, p3);
+ 
+    glColor3f(0.5,0.5,0.5);
+    Square(p1, p5, p6, p2);
+ 
+    glColor3f(0.5,0.5,0.5);
+    Square(p3, p2, p6, p7);
+ 
+    glColor3f(0.5,0.5,0.5);
+    Square(p0, p1, p5, p4);
+}
+
+void refletores(){
+    GLfloat refletorEsqSup[8][3] =   {
+                            {-1.24, 0.91, 0.85}, 
+                            {-1.26, 0.91, 0.85},
+                            {-1.26, 0.89, 0.85},
+                            {-1.24, 0.89, 0.85},
+                            {-1.24, 0.91, 0.25}, 
+                            {-1.26, 0.91, 0.25},
+                            {-1.26, 0.89, 0.25},
+                            {-1.24, 0.89, 0.25},
+                        };
+    
+    GLfloat refletorEsqInf[8][3] =   {
+                            {-1.24, -0.91, 0.85}, 
+                            {-1.26, -0.91, 0.85},
+                            {-1.26, -0.89, 0.85},
+                            {-1.24, -0.89, 0.85},
+                            {-1.24, -0.91, 0.25}, 
+                            {-1.26, -0.91, 0.25},
+                            {-1.26, -0.89, 0.25},
+                            {-1.24, -0.89, 0.25},
+                        };
+    
+    GLfloat refletorDirSup[8][3] =   {
+                            {1.24, 0.91, 0.85}, 
+                            {1.26, 0.91, 0.85},
+                            {1.26, 0.89, 0.85},
+                            {1.24, 0.89, 0.85},
+                            {1.24, 0.91, 0.25}, 
+                            {1.26, 0.91, 0.25},
+                            {1.26, 0.89, 0.25},
+                            {1.24, 0.89, 0.25},
+                        };
+    
+    GLfloat refletorDirInf[8][3] =   {
+                            {1.24, -0.91, 0.85}, 
+                            {1.26, -0.91, 0.85},
+                            {1.26, -0.89, 0.85},
+                            {1.24, -0.89, 0.85},
+                            {1.24, -0.91, 0.25}, 
+                            {1.26, -0.91, 0.25},
+                            {1.26, -0.89, 0.25},
+                            {1.24, -0.89, 0.25},
+                        };
+    
+    refletor(refletorEsqSup[0],refletorEsqSup[1],refletorEsqSup[2],refletorEsqSup[3],refletorEsqSup[4],refletorEsqSup[5],refletorEsqSup[6],refletorEsqSup[7]);
+    refletor(refletorEsqInf[0],refletorEsqInf[1],refletorEsqInf[2],refletorEsqInf[3],refletorEsqInf[4],refletorEsqInf[5],refletorEsqInf[6],refletorEsqInf[7]);
+    refletor(refletorDirSup[0],refletorDirSup[1],refletorDirSup[2],refletorDirSup[3],refletorDirSup[4],refletorDirSup[5],refletorDirSup[6],refletorDirSup[7]);
+    refletor(refletorDirInf[0],refletorDirInf[1],refletorDirInf[2],refletorDirInf[3],refletorDirInf[4],refletorDirInf[5],refletorDirInf[6],refletorDirInf[7]);
+}
+
+void luminarias(){
+
+    glPushMatrix();
+    ligado ? glColor3f(1, 1, 1) : glColor3f(0.5, 0.5, 0.5) ;
+    glTranslatef(-1.25, 0.9, 0.85+0.02);
+    glutSolidSphere(0.06, 10, 10);
+    glPopMatrix();
+
+    glPushMatrix();
+    ligado ? glColor3f(1, 1, 1) : glColor3f(0.5, 0.5, 0.5) ;
+    glTranslatef(-1.25, -0.9, 0.85+0.02);
+    glutSolidSphere(0.06, 10, 10);
+    glPopMatrix();
+
+    glPushMatrix();
+    ligado ? glColor3f(1, 1, 1) : glColor3f(0.5, 0.5, 0.5) ;
+    glTranslatef(1.25, 0.9, 0.85+0.02);
+    glutSolidSphere(0.06, 10, 10);
+    glPopMatrix();
+
+    glPushMatrix();
+    ligado ? glColor3f(1, 1, 1) : glColor3f(0.5, 0.5, 0.5) ;
+    glTranslatef(1.25, -0.9, 0.85+0.02);
+    glutSolidSphere(0.06, 10, 10);
+    glPopMatrix();
+ 
+}
+
 void Draw()
 {
     GLfloat VCampo[8][3] =   {
-                            {-1, 1, 0.25}, 
-                            {1, 1, 0.25},
-                            {1, -1, 0.25},
-                            {-1, -1, 0.25},
-                            {-1, 1, 0}, 
-                            {1, 1, 0},
-                            {1, -1, 0},
-                            {-1, -1, 0},
+                            {-2, 2, 0.25}, 
+                            {2, 2, 0.25},
+                            {2, -2, 0.25},
+                            {-2, -2, 0.25},
+                            {-2, 2, 0}, 
+                            {2, 2, 0},
+                            {2, -2, 0},
+                            {-2, -2, 0},
                         };
- 
+    
+
     GLfloat t1i[8][3] =   {
                             {-1, 0.2, 0.55},
                             {-0.98, 0.2, 0.55},
@@ -464,6 +970,9 @@ void Draw()
     trave(t4i[0], t4i[1], t4i[2], t4i[3], t4i[4], t4i[5], t4i[6], t4i[7]);
     trave(t5i[0], t5i[1], t5i[2], t5i[3], t5i[4], t5i[5], t5i[6], t5i[7]);
     trave(t6i[0], t6i[1], t6i[2], t6i[3], t6i[4], t6i[5], t6i[6], t6i[7]);
+    arquibancadas();
+    refletores();
+    luminarias();
     bresenham();
     glPopMatrix();
     bola();
@@ -574,6 +1083,36 @@ void Key(unsigned char ch, int x, int y)
         case 'L':
             Fx += 0.3;
             break;
+        case 'r':
+            Cx = 0, Cy = -3.1, Cz = 2.9, Fx = 0, Fy = 4, Fz = -4.1, Ux = 0, Uy = 1, Uz = 0;
+            break;
+        case 'q':
+            ligado = ligado ? 0 : 1;
+            break;
+        case 'Q':
+            ligado = ligado ? 0 : 1;
+            break;
+        case 'n':
+            dia = dia ? 0 : 1;
+            if(dia){
+                ligado = 0;
+                glClearColor(0.529f, 0.808f, 0.922f, 1); 
+            } else{
+                ligado = 0;
+                glClearColor(0,0,0,1);
+            }
+            break;
+        case 'N':
+            dia = dia ? 0 : 1;
+            if(dia){
+                ligado = 0;
+                glClearColor(0.529f, 0.808f, 0.922f, 1); 
+            } else{
+                ligado = 0;
+                glClearColor(0,0,0,1);
+            }
+            break;
+
     }
  
     glutPostRedisplay();
@@ -581,14 +1120,59 @@ void Key(unsigned char ch, int x, int y)
  
 int main(int argC, char *argV[])
 {
+
     glutInit(&argC, argV);
     glutInitWindowSize(800, 600);
     glutInitWindowPosition(100, 150);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutCreateWindow("Soccer field");
+    glutMouseFunc(GerenciaMouse);
     MyInit();
     glutDisplayFunc(Draw);
     glutKeyboardFunc(Key);
+    setup_lighting();
     glutMainLoop();
     return 0;
+}
+
+void setup_lighting()
+{
+    // float mat_specular[] = {1.0f, 1.0f, 1.0f}; //branco
+    // float light_position[] = {0.0f, 18.0f, 0.0f, 1.0f};
+    // float light_diffuse[] = {0.6f, 0.6f, 0.6f}; // lanterna clareando o ambiente
+
+    //luminaria
+    // glMaterialfv(GL_LIGHT1, GL_SPECULAR, mat_specular);
+    // glLightfv(GL_LIGHT1, GL_POSITION, light_position);
+    // glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
+
+    //spot  
+    // float spot_direction[] = {-0.7f, -0.7f, 0.4f};
+    // float spot_cutoff[] = {20.0f};
+    // float spot_position[] = {20, 20, -50, 1.0};
+    // float spot_difuse[] = {1.0, 1.0, 1.0}; // luz branca do spot
+
+    // glLightfv(GL_LIGHT0, GL_DIFFUSE, spot_difuse);
+    // glLightfv(GL_LIGHT0, GL_POSITION, spot_position);
+    // glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spot_direction);
+    // glLightfv(GL_LIGHT0, GL_SPOT_CUTOFF, spot_cutoff);
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+
+    float globalAmb[] = {0.5f,0.5f,0.5f,0.1f,};
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmb);
+
+    float light0[4][4] = {
+        {0.1f, 0.1f, 0.1f, 1.f},
+        {0.8f, 0.8f, 0.8f, 1.f},
+        {1.f, 1.f, 1.f, 1.f},
+        {0.f, 0.f, 1.f, 1.f}
+    };
+
+    glLightfv(GL_LIGHT0, GL_AMBIENT, &light0[0][0]);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, &light0[1][0]);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, &light0[2][0]);
+    glLightfv(GL_LIGHT0, GL_POSITION, &light0[3][0]);
 }
