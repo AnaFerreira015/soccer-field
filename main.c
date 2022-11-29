@@ -1177,7 +1177,7 @@ void setup_lighting()
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmb);
 
     float light0[4][4] = {
-        {0.3f, 0.3f, 0.3f, 1.f},
+        {0.2f, 0.2f, 0.2f, 1.f},
         {0.8f, 0.8f, 0.8f, 1.f},
         {1.f, 1.f, 1.f, 1.f},
         {0.f, 0.f, 1.f, 1.f}};
