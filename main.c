@@ -373,75 +373,217 @@ void displayScore(float x, float y, void *font){
     glutBitmapString(font, placar);
 }
 
-void arquibancada(GLfloat p0[], GLfloat p1[], GLfloat p2[], GLfloat p3[], GLfloat p4[], GLfloat p5[], GLfloat p6[], GLfloat p7[]){
-    glColor3f(1,0,0);
+void arquibancada(int r, int g, int b, GLfloat p0[], GLfloat p1[], GLfloat p2[], GLfloat p3[], GLfloat p4[], GLfloat p5[], GLfloat p6[], GLfloat p7[]){
+  
+    
+    glColor3f(r,g,b);
     Square(p0, p1, p2, p3);
  
-    glColor3f(1,0,0);
+    glColor3f(r,g,b);
     Square(p4, p5, p6, p7);
  
-    glColor3f(1,0,0);
+    glColor3f(r,g,b);
     Square(p0, p4, p7, p3);
  
-    glColor3f(1,0,0);
+     glColor3f(r,g,b);
     Square(p1, p5, p6, p2);
  
-    glColor3f(1,0,0);
+     glColor3f(r,g,b);
     Square(p3, p2, p6, p7);
  
-    glColor3f(1,0,0);
+     glColor3f(r,g,b);
     Square(p0, p1, p5, p4);
+
+
 }
 
 void  arquibancadas(){
     GLfloat arquibancadaGolEsq[8][3] =   {
-                            {-2, 2, 0.35}, 
-                            {-1.5, 2, 0.35},
-                            {-1.5, -2, 0.35},
-                            {-2, -2, 0.35},
-                            {-2, 2, 0.25}, 
-                            {-1.5, 2, 0.25},
-                            {-1.5, -2, 0.25},
-                            {-2, -2, 0.25},
+                            {-2.1, 2, 0.55}, 
+                            {-1.75, 2, 0.55},
+                            {-1.75, -2, 0.55},
+                            {-2.1, -2, 0.55},
+                            {-2.1, 2, 0}, 
+                            {-1.75, 2, 0},
+                            {-1.75, -2, 0},
+                            {-2.1, -2, 0},
+                        };
+      GLfloat arquibancadaGolEsq_B[8][3] =   {
+                            {-2.1, 2, 0.56}, 
+                            {-1.75, 2, 0.56},
+                            {-1.75, -2, 0.56},
+                            {-2.1, -2, 0.56},
+                            {-2.1, 2, 0.56}, 
+                            {-1.75, 2, 0.56},
+                            {-1.75, -2, 0.56},
+                            {-2.1, -2, 0.56},
                         };
 
+                            GLfloat arquibancadaGolEsq_2[8][3] =   {
+                                {-1.75, 1.75, 0.35}, 
+                                {-1.5, 1.75, 0.35},
+                                {-1.5, -1.75, 0.35},
+                                {-1.75, -1.75, 0.35},
+                                {-1.75, 1.75, 0.25}, 
+                                {-1.5, 1.75, 0.25},
+                                {-1.5, -1.75, 0.25},
+                                {-1.75, -1.75, 0.25},
+                            };
+                            GLfloat arquibancadaGolEsq_3[8][3] =   {
+                                {-1.49, 1.75, 0.35}, 
+                                {-1.49, 1.75, 0.35},
+                                {-1.49, -1.75, 0.35},
+                                {-1.49, -1.75, 0.35},
+                                {-1.49, 1.75, 0.25}, 
+                                {-1.49, 1.75, 0.25},
+                                {-1.49, -1.75, 0.25},
+                                {-1.49, -1.75, 0.25},
+                            };
+
     GLfloat arquibancadaGolDir[8][3] =   {
-                            {1.5, 2, 0.35}, 
-                            {2, 2, 0.35},
-                            {2, -2, 0.35},
-                            {1.5, -2, 0.35},
-                            {1.5, 2, 0.25}, 
-                            {2, 2, 0.25},
-                            {2, -2, 0.25},
-                            {1.5, -2, 0.25},
+                            {1.75, 2, 0.55}, 
+                            {2.1, 2, 0.55},
+                            {2.1, -2, 0.55},
+                            {1.75, -2, 0.55},
+                            {1.75, 2, 0}, 
+                            {2.1, 2, 0},
+                            {2.1, -2, 0},
+                            {1.75, -2, 0},
+                        };
+    GLfloat arquibancadaGolDir_B[8][3] =   {
+                            {1.75, 2, 0.56}, 
+                            {2.1, 2, 0.56},
+                            {2.1, -2, 0.56},
+                            {1.75, -2, 0.56},
+                            {1.75, 2, 0.56}, 
+                            {2.1, 2, 0.56},
+                            {2.1, -2, 0.56},
+                            {1.75, -2, 0.56},
+                        };
+     GLfloat arquibancadaGolDir_2[8][3] =   {
+                            {1.5, 1.75, 0.35}, 
+                            {1.75, 1.75, 0.35},
+                            {1.75, -1.75, 0.35},
+                            {1.5, -1.75, 0.35},
+                            {1.5, 1.75, 0.25}, 
+                            {1.75, 1.75, 0.25},
+                            {1.75, -1.75, 0.25},
+                            {1.5, -1.75, 0.25},
+                        };
+
+    GLfloat arquibancadaGolDir_3[8][3] =   {
+                            {1.49, 1.75, 0.35}, 
+                            {1.49, 1.75, 0.35},
+                            {1.49, -1.75, 0.35},
+                            {1.49, -1.75, 0.35},
+                            {1.49, 1.75, 0.25}, 
+                            {1.49, 1.75, 0.25},
+                            {1.49, -1.75, 0.25},
+                            {1.49, -1.75, 0.25},
                         };
 
     GLfloat arquibancadaFront[8][3] =   {
-                            {-2, -1.5, 0.35}, 
-                            {2, -1.5, 0.35},
-                            {2, -2, 0.35},
-                            {-2, -2, 0.35},
-                            {-2, -1.5, 0.25}, 
-                            {2, -1.5, 0.25},
-                            {2, -2, 0.25},
-                            {-2, -2, 0.25},
+                            {-2.1, -1.75, 0.55}, 
+                            {2.1, -1.75, 0.55},
+                            {2.1, -2.1, 0.55},
+                            {-2.1, -2.1, 0.55},
+                            {-2.1, -2, 0}, 
+                            {2.1, -2, 0},
+                            {2.1, -2.1, 0},
+                            {-2.1, -2.1, 0},
+                        };
+    GLfloat arquibancadaFront_B[8][3] =   {
+                            {-2.1, -1.75, 0.56}, 
+                            {2.1, -1.75, 0.56},
+                            {2.1, -2.1, 0.56},
+                            {-2.1, -2.1, 0.56},
+                            {-2.1, -2, 0.56}, 
+                            {2.1, -2, 0.56},
+                            {2.1, -2.1, 0.56},
+                            {-2.1, -2.1, 0.56},
+                        };
+    GLfloat arquibancadaFront_2[8][3] =   {
+                            {-1.75, -1.5, 0.35}, 
+                            {1.75, -1.5, 0.35},
+                            {1.75, -2, 0.35},
+                            {-1.75, -2, 0.35},
+                            {-1.75, -1.5, 0.25}, 
+                            {1.75, -1.5, 0.25},
+                            {1.75, -2, 0.25},
+                            {-1.75, -2, 0.25},
+                        };
+    GLfloat arquibancadaFront_3[8][3] =   {
+                            {-1.75, -1.49, 0.35}, 
+                            {1.75, -1.49, 0.35},
+                            {1.75, -1.49, 0.35},
+                            {-1.75, -1.49, 0.35},
+                            {-1.75, -1.49, 0.25}, 
+                            {1.75, -1.49, 0.25},
+                            {1.75, -1.49, 0.25},
+                            {-1.75, -1.49, 0.25},
                         };
 
     GLfloat arquibancadaBack[8][3] =   {
-                            {-2, 2, 0.35}, 
-                            {2, 2, 0.35},
-                            {2, 1.5, 0.35},
-                            {-2, 1.5, 0.35},
+                            {-2, 2, 0.55}, 
+                            {2, 2, 0.55},
+                            {2, 1.75, 0.55},
+                            {-2, 1.75, 0.55},
                             {-2, 2, 0.25}, 
                             {2, 2, 0.25},
-                            {2, 1.5, 0.25},
-                            {-2, 1.5, 0.25},
+                            {2, 1.75, 0.25},
+                            {-2, 1.75, 0.25},
+                        };
+    GLfloat arquibancadaBack_B[8][3] =   {
+                            {-2, 2, 0.56}, 
+                            {2.1, 2, 0.56},
+                            {2.1, 1.75, 0.56},
+                            {-2, 1.75, 0.56},
+                            {-2, 2, 0.56}, 
+                            {2.1, 2, 0.56},
+                            {2.1, 1.75, 0.56},
+                            {-2, 1.75, 0.56},
+                        };
+    GLfloat arquibancadaBack_2[8][3] =   {
+                            {-1.75, 1.75, 0.35}, 
+                            {1.75, 1.75, 0.35},
+                            {1.75, 1.5, 0.35},
+                            {-1.75, 1.5, 0.35},
+                            {-1.75, 1.75, 0.25}, 
+                            {1.75, 1.75, 0.25},
+                            {1.75, 1.5, 0.25},
+                            {-1.75, 1.5, 0.25},
+                        };
+     GLfloat arquibancadaBack_3[8][3] =   {
+                            {-1.75, 1.49, 0.35}, 
+                            {1.75, 1.49, 0.35},
+                            {1.75, 1.49, 0.35},
+                            {-1.75, 1.49, 0.35},
+                            {-1.75, 1.49, 0.25}, 
+                            {1.75, 1.49, 0.25},
+                            {1.75, 1.49, 0.25},
+                            {-1.75, 1.49, 0.25},
                         };
     
-    arquibancada(arquibancadaGolEsq[0], arquibancadaGolEsq[1], arquibancadaGolEsq[2], arquibancadaGolEsq[3], arquibancadaGolEsq[4], arquibancadaGolEsq[5], arquibancadaGolEsq[6], arquibancadaGolEsq[7]);
-     arquibancada(arquibancadaGolDir[0], arquibancadaGolDir[1], arquibancadaGolDir[2], arquibancadaGolDir[3], arquibancadaGolDir[4], arquibancadaGolDir[5], arquibancadaGolDir[6], arquibancadaGolDir[7]);
-     arquibancada(arquibancadaFront[0], arquibancadaFront[1], arquibancadaFront[2], arquibancadaFront[3], arquibancadaFront[4], arquibancadaFront[5], arquibancadaFront[6], arquibancadaFront[7]);
-     arquibancada(arquibancadaBack[0], arquibancadaBack[1], arquibancadaBack[2], arquibancadaBack[3], arquibancadaBack[4], arquibancadaBack[5], arquibancadaBack[6], arquibancadaBack[7]);
+    arquibancada(1,1,1, arquibancadaGolEsq[0], arquibancadaGolEsq[1], arquibancadaGolEsq[2], arquibancadaGolEsq[3], arquibancadaGolEsq[4], arquibancadaGolEsq[5], arquibancadaGolEsq[6], arquibancadaGolEsq[7]);
+    arquibancada(0,1,1, arquibancadaGolEsq_B[0], arquibancadaGolEsq_B[1], arquibancadaGolEsq_B[2], arquibancadaGolEsq_B[3], arquibancadaGolEsq_B[4], arquibancadaGolEsq_B[5], arquibancadaGolEsq_B[6], arquibancadaGolEsq_B[7]);
+    arquibancada(0,1,1, arquibancadaGolEsq_2[0], arquibancadaGolEsq_2[1], arquibancadaGolEsq_2[2], arquibancadaGolEsq_2[3], arquibancadaGolEsq_2[4], arquibancadaGolEsq_2[5], arquibancadaGolEsq_2[6], arquibancadaGolEsq_2[7]);
+    arquibancada(1,1,1, arquibancadaGolEsq_3[0], arquibancadaGolEsq_3[1], arquibancadaGolEsq_3[2], arquibancadaGolEsq_3[3], arquibancadaGolEsq_3[4], arquibancadaGolEsq_3[5], arquibancadaGolEsq_3[6], arquibancadaGolEsq_3[7]);
+
+    arquibancada(1,1,1, arquibancadaGolDir[0], arquibancadaGolDir[1], arquibancadaGolDir[2], arquibancadaGolDir[3], arquibancadaGolDir[4], arquibancadaGolDir[5], arquibancadaGolDir[6], arquibancadaGolDir[7]);
+    arquibancada(0,1,1, arquibancadaGolDir_B[0], arquibancadaGolDir_B[1], arquibancadaGolDir_B[2], arquibancadaGolDir_B[3], arquibancadaGolDir_B[4], arquibancadaGolDir_B[5], arquibancadaGolDir_B[6], arquibancadaGolDir_B[7]);
+    arquibancada(0,1,1, arquibancadaGolDir_2[0], arquibancadaGolDir_2[1], arquibancadaGolDir_2[2], arquibancadaGolDir_2[3], arquibancadaGolDir_2[4], arquibancadaGolDir_2[5], arquibancadaGolDir_2[6], arquibancadaGolDir_2[7]);
+    arquibancada(1,1,1, arquibancadaGolDir_3[0], arquibancadaGolDir_3[1], arquibancadaGolDir_3[2], arquibancadaGolDir_3[3], arquibancadaGolDir_3[4], arquibancadaGolDir_3[5], arquibancadaGolDir_3[6], arquibancadaGolDir_3[7]);
+
+    arquibancada(1,1,1, arquibancadaFront[0], arquibancadaFront[1], arquibancadaFront[2], arquibancadaFront[3], arquibancadaFront[4], arquibancadaFront[5], arquibancadaFront[6], arquibancadaFront[7]);
+    arquibancada(0,1,1, arquibancadaFront_B[0], arquibancadaFront_B[1], arquibancadaFront_B[2], arquibancadaFront_B[3], arquibancadaFront_B[4], arquibancadaFront_B[5], arquibancadaFront_B[6], arquibancadaFront_B[7]);
+    arquibancada(0,1,1, arquibancadaFront_2[0], arquibancadaFront_2[1], arquibancadaFront_2[2], arquibancadaFront_2[3], arquibancadaFront_2[4], arquibancadaFront_2[5], arquibancadaFront_2[6], arquibancadaFront_2[7]);
+    arquibancada(1,1,1, arquibancadaFront_3[0], arquibancadaFront_3[1], arquibancadaFront_3[2], arquibancadaFront_3[3], arquibancadaFront_3[4], arquibancadaFront_3[5], arquibancadaFront_3[6], arquibancadaFront_3[7]);
+
+    arquibancada(1,1,1, arquibancadaBack[0], arquibancadaBack[1], arquibancadaBack[2], arquibancadaBack[3], arquibancadaBack[4], arquibancadaBack[5], arquibancadaBack[6], arquibancadaBack[7]);
+    arquibancada(0,1,1, arquibancadaBack_B[0], arquibancadaBack_B[1], arquibancadaBack_B[2], arquibancadaBack_B[3], arquibancadaBack_B[4], arquibancadaBack_B[5], arquibancadaBack_B[6], arquibancadaBack_B[7]);
+    arquibancada(0,1,1, arquibancadaBack_2[0], arquibancadaBack_2[1], arquibancadaBack_2[2], arquibancadaBack_2[3], arquibancadaBack_2[4], arquibancadaBack_2[5], arquibancadaBack_2[6], arquibancadaBack_2[7]);
+    arquibancada(1,1,1, arquibancadaBack_3[0], arquibancadaBack_3[1], arquibancadaBack_3[2], arquibancadaBack_3[3], arquibancadaBack_3[4], arquibancadaBack_3[5], arquibancadaBack_3[6], arquibancadaBack_3[7]);
+
 }
 
 void Draw()
